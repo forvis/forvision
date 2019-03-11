@@ -1,0 +1,17 @@
+language: r
+cache: packages
+sudo: false
+
+warnings_are_errors: true
+
+
+r_github_packages:
+  - jimhester/covr
+
+notifications:
+  email:
+    on_success: true
+    on_failure: true
+
+after_success:
+  - Rscript -e 'library(covr);coveralls()'
