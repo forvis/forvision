@@ -1,0 +1,45 @@
+---
+title: "Forecast table schema"
+author: "Forvision Authors"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{forecast table schema}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+Forecast Table Schema is needed to store forecasting results.
+
+Each table line corresponds to all the forecasting results obtained for a given time series series using a given method for a given horizon for a given origin:
+
+
+| Field name (column name)| Description| Examples |
+| --- | ---| ---- |
+|series_id* | Time series ID for which the forecast was calculated| "Y1" |
+|timestamp*|Any representation of the period to which the observation relates. We recommend the use of the [ISO 8601 standard](https://en.wikipedia.org/wiki/ISO_8601)|"1997" in case of yearly data, "1997-01-20" in case of daily data, "1997-11" in case of monthly data, "1997-W03" in case of weekly data, "2018-Q2" in case of quarterly data|
+|origin_timestamp*|Origin of the forecast (provided in a timestamp format)|"1996-12-29"|
+|horizon*| Forecast horizon| 3 |
+|method_id*| Method identifier - a unique name that identifies a method by which the forecasting result was calculated| "ARIMA"|
+|forecast| Point forecast| 234|
+|lo90| The lower limit for the 90% prediction interval|178|
+|hi90| The upper limit for the 90% prediction interval|273|
+
+*the key (the unique value that should not duplicated) for this table schema is series_id, method_id, timestamp, origin_timestamp, horizon. 
+
+
+## Example:
+
+```{r}
+library(forvision)
+head(example1_FTS, 10)
+```
+

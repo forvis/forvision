@@ -1,0 +1,50 @@
+---
+title: "Glossary"
+author: "Forvision Authors"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Glossary}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+*Forecast origin* – the most recent historical period for which data is used to build a forecasting model. The next time period is the first forecast period [2].
+
+*Forecast horizon* – the number of periods from the forecast origin to the end of the time period being forecast [1].
+
+*Prediction intervals (PIs)* – the bounds within which future observed values are expected to fall, given a specified level of confidence.  For  example,  a  95%  PI  is  expected  to  contain  the  actual  forecast  95%  of  the  time.  Some  researchers  have  found  that estimated PIs are typically too narrow for quantitative and judgmental forecasting methods [1].
+
+*Out-of-sample forecasts* – the process using the model fitted on the sample (the data sample that you are using to fit the model) for forecasting for the new data points that was not part of the data sample. For example, if you use data 1990-2010 to fit the model and then you forecast for 2011-2013, it's out-of-sample forecast (if you use 1990-2013 for fitting the model and then you forecast 2011-2013, then its in-sample forecast). We used [this](https://stats.stackexchange.com/questions/260899/what-is-difference-between-in-sample-and-out-of-sample-forecasts) discussion to develop this term.
+
+*Out-of-sample evaluation* – the process of formally evaluating the predictive capabilities of the models on the new data points not belonging to the training sample to see how effective the algorithms are in reproducing data. We used [this](https://stats.stackexchange.com/questions/260899/what-is-difference-between-in-sample-and-out-of-sample-forecasts) discussion to develop this term.
+
+*Rolling-origin forecast* – this is a forecasting process in which the “origin” at which the forecast is based rolls forward in time [5].  
+
+*Slice and dice* – to slice and dice is to break a body of information down into smaller parts or to examine it from different viewpoints so that you can understand it better [3].
+
+*Framework* – a conceptual structure intended to serve as a guide for the building of something that expands the structure into something useful [4].
+
+*Сoverage probability* - the probability that the PI contains the actual value.
+
+*Nominal coverage probability* - the confidence level of the PI.
+
+**References:**
+
+[1] J. Scott Armstrong, “Principles of forecasting: A handbook for Researchers and Practitioners,”  University of Pennsylvania, USA, 2001. 
+
+[2] http://www.moneycontrol.com/glossary/trading-terms/forecast-origin_2465.html.
+
+[3] https://www.urbandictionary.com/define.php?term=slice%20and%20dice
+
+[4] https://whatis.techtarget.com/definition/framework
+
+[5] https://robjhyndman.com/hyndsight/tscv/

@@ -1,0 +1,40 @@
+Package: forvision
+Type: Package
+Title: Forecast Evaluation and Visualization
+Version: 0.0.1
+Date: 2019-01-30
+Authors@R: c(
+    person("Andrey", "Davydenko", role = "aut", email = "andrey@live.co.uk"),
+    person("Cuong", "Sai", role = c("aut", "cre"), email = "svcuonghvktqs@gmail.com"),
+    person("Maxim", "Shcherbakov", role = "aut", email = "maxim.shcherbakov@gmail.com"))
+Author: Andrey Davydenko [aut, cre],
+    Cuong Sai [aut, cre],
+    Maxim Shcherbakov [aut]
+Maintainer: Cuong Sai <svcuonghvktqs@gmail.com>
+Description: Contains tools to analyze point and interval forecasts produced by alternative 
+    methods across many series over multiple horizons. Can work with rolling-origin 
+    out-of-sample forecasts. Implements means to access forecast data, to explore 
+    actuals and forecasts, and to evaluate and compare forecasting performance.
+License: GPL-3 | file LICENSE
+Depends:
+    R (>= 2.10)
+Imports:
+    ggplot2,
+    dygraphs,
+    dplyr,
+    magrittr,
+    xts,
+    stats, 
+    glue,
+    utils, 
+    scales
+URL: https://forvis.github.io/, https://github.com/forvis/forvision
+BugReports: https://github.com/forvis/forvision/issues
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
+Suggests: 
+    knitr,
+    zoo,
+    rmarkdown
+VignetteBuilder: knitr
