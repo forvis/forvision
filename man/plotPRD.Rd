@@ -27,7 +27,7 @@ Generates a \href{https://forvis.github.io/our-publications/1.pdf}{prediction-re
 The diagram shows a scatter plot with actuals and forecasts.
 }
 \examples{
-af <- createAFTS(example1_TSTS, example1_FTS)
+af <- createAFTS(example1_ts, example1_fc)
 plotPRD(af)
 
 }

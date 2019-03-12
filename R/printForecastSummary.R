@@ -11,7 +11,7 @@
 #' @author Cuong Sai, Andrey Davydenko, and Maxim shcherbakov.
 #' @seealso \code{\link{printSeriesSummary}}
 #' @examples
-#' printForecastSummary(example1_FTS)
+#' printForecastSummary(example1_fc)
 #'
 #' @export
 printForecastSummary <- function(fc) {

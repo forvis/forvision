@@ -23,7 +23,7 @@
 #' @author Cuong Sai, Andrey Davydenko, and Maxim Shcherbakov.
 #' @keywords evaluate
 #' @examples
-#' af <- createAFTS(example1_TSTS, example1_FTS)
+#' af <- createAFTS(example1_ts, example1_fc)
 #' calculateCoverage(af, 90)
 #'
 #' @export

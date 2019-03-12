@@ -13,10 +13,10 @@
 #' @details Takes all records contained in \code{fc} and matches with values from \code{ts}.
 #' If no matching value is found, the record is not included in the result.
 #' @author Cuong Sai, Andrey Davydenko, and Maxim Shcherbakov.
-#' @seealso \code{\link{showTSTS}}, \code{\link{showFTS}}, \code{\link{example1_TSTS}}, \code{\link{example1_FTS}}
+#' @seealso \code{\link{showTSTS}}, \code{\link{showFTS}}, \code{\link{example1_ts}}, \code{\link{example1_fc}}
 #' @keywords datasets
 #' @examples
-#' af <- createAFTS(example1_TSTS, example1_FTS)
+#' af <- createAFTS(example1_ts, example1_fc)
 #' head(af)
 #'
 #' @export

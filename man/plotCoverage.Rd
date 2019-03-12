@@ -36,7 +36,7 @@ Generates a bar chart showing coverage percentages for the given nominal coverag
 and horizons contained in horizons. Adds error bars and nominal coverage line to chart.
 }
 \examples{
-af <- createAFTS(example1_TSTS, example1_FTS)
+af <- createAFTS(example1_ts, example1_fc)
 plotCoverage(af, pi = 90, methods = c("A", "B"))
 plotCoverage(af, pi = 90, horizons = 1:2)
 

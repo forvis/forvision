@@ -17,7 +17,7 @@ Prints summary info for actuals.
 Outputs summary info containing the number of series, number of observations, period range.
 }
 \examples{
-printSeriesSummary(example1_TSTS)
+printSeriesSummary(example1_ts)
 
 }
 \seealso{

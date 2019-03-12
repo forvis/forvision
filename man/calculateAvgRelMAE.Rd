@@ -38,7 +38,7 @@ each method contained in af. Outputs accuracy tables and plots.
 The input dataframe af can be created using \code{createAFTS()}.
 }
 \examples{
-af <- createAFTS(example1_TSTS, example1_FTS)
+af <- createAFTS(example1_ts, example1_fc)
 acc <- calculateAvgRelMAE(af, "A")
 acc$accuracy
 acc$rank

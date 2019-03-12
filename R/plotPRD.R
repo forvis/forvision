@@ -17,7 +17,7 @@
 #' \emph{Seventh International Conference on System Modelling & Advancement on Research Trends}, 145-149. Moradabad, India.
 #' @keywords explore
 #' @examples
-#' af <- createAFTS(example1_TSTS, example1_FTS)
+#' af <- createAFTS(example1_ts, example1_fc)
 #' plotPRD(af)
 #'
 #' @export

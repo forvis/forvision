@@ -4,8 +4,8 @@
 \name{m3_yearly_fc}
 \alias{m3_yearly_fc}
 \title{Yearly forecasts from the M3-competition (FTS)}
-\format{\code{m3_yearly_fc} is a data frame formatted using the Time Series
-Table Schema, use \code{showTSTS()} to display schema specification details.}
+\format{\code{m3_yearly_fc} is a data frame formatted using the Forecast
+Table Schema, use \code{showFTS()} to display schema specification details.}
 \source{
 \url{https://github.com/forvis/forvision_data/}.
 }
@@ -13,8 +13,7 @@ Table Schema, use \code{showTSTS()} to display schema specification details.}
 m3_yearly_fc
 }
 \description{
-Example dataset containing time series actuals relating to different series. The dataset contains artificial
-yearly observations created to illustrate the capabilities of the package.
+The dataset contains forecast data to different yearly time series from the M3-competition.
 }
 \examples{
 
@@ -23,7 +22,9 @@ head(m3_yearly_fc, 10)
 
 }
 \seealso{
-\code{\link{example1_FTS}}
+\code{\link{example1_fc}}, \code{\link{m3_yearly_fc_pis}}, \code{\link{m3_quarterly_fc}},
+\code{\link{m3_quarterly_fc_pis}}, \code{\link{m3_monthly_fc}}, \code{\link{m3_monthly_fc_pis}},
+\code{\link{m3_other_fc}}, \code{\link{m3_other_fc_pis}}
 }
 \author{
 Cuong Sai, Andrey Davydenko, and Maxim Shcherbakov.

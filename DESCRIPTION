@@ -15,7 +15,7 @@ Description: Contains tools to analyze point and interval forecasts produced by 
     methods across many series over multiple horizons. Can work with rolling-origin 
     out-of-sample forecasts. Implements means to access forecast data, to explore 
     actuals and forecasts, and to evaluate and compare forecasting performance.
-License: GPL-3 | file LICENSE
+License: GPL-3 
 Depends:
     R (>= 2.10)
 Imports:

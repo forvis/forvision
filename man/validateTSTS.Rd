@@ -20,7 +20,7 @@ Checks if the input data is correctly formatted in accordance with the Time Seri
 Checks that ts contains necessary column and the composite primary key values are not duplicated.
 }
 \examples{
-validateTSTS(example1_TSTS)
+validateTSTS(example1_ts)
 
 }
 \seealso{

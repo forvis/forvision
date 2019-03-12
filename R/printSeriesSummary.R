@@ -11,7 +11,7 @@
 #' @author Cuong Sai, Andrey Davydenko, and Maxim Shcherbakov.
 #' @seealso \code{\link{printForecastSummary}}
 #' @examples
-#' printSeriesSummary(example1_TSTS)
+#' printSeriesSummary(example1_ts)
 #'
 #' @export
 

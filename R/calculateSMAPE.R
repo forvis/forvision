@@ -24,7 +24,7 @@
 #' @seealso \code{\link{calculateMAPE}}, \code{\link{calculateAvgRelMAE}}, \code{\link{calculateMASE}}
 #' @keywords evaluate
 #' @examples
-#' af <- createAFTS(example1_TSTS, example1_FTS)
+#' af <- createAFTS(example1_ts, example1_fc)
 #' acc <- calculateSMAPE(af)
 #' acc$accuracy
 #' acc$rank

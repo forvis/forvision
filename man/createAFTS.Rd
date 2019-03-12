@@ -26,12 +26,12 @@ Takes all records contained in \code{fc} and matches with values from \code{ts}.
 If no matching value is found, the record is not included in the result.
 }
 \examples{
-af <- createAFTS(example1_TSTS, example1_FTS)
+af <- createAFTS(example1_ts, example1_fc)
 head(af)
 
 }
 \seealso{
-\code{\link{showTSTS}}, \code{\link{showFTS}}, \code{\link{example1_TSTS}}, \code{\link{example1_FTS}}
+\code{\link{showTSTS}}, \code{\link{showFTS}}, \code{\link{example1_ts}}, \code{\link{example1_fc}}
 }
 \author{
 Cuong Sai, Andrey Davydenko, and Maxim Shcherbakov.

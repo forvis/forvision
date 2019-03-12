@@ -30,7 +30,7 @@ Confidence limits for the actual \emph{coverage probability} are obtained using 
 To get a coverage probability graph, use \code{plotCoverage()}.
 }
 \examples{
-af <- createAFTS(example1_TSTS, example1_FTS)
+af <- createAFTS(example1_ts, example1_fc)
 calculateCoverage(af, 90)
 
 }

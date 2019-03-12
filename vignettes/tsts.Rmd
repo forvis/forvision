@@ -35,6 +35,6 @@ If some observation is missing, the corresponding table line can be omitted or c
 
 ```{r}
 library(forvision)
-head(example1_TSTS, 10)
+head(m3_yearly_ts, 10)
 ```
 

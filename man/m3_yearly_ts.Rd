@@ -13,8 +13,7 @@ Table Schema, use \code{showTSTS()} to display schema specification details.}
 m3_yearly_ts
 }
 \description{
-Example dataset containing time series actuals relating to different series. The dataset contains artificial
-yearly observations created to illustrate the capabilities of the package.
+The dataset contains yearly time series actuals relating to different series from the M3-competition.
 }
 \examples{
 
@@ -23,7 +22,8 @@ head(m3_yearly_ts, 10)
 
 }
 \seealso{
-\code{\link{example1_FTS}}
+\code{\link{example1_ts}}, \code{\link{m3_quarterly_ts}}, \code{\link{m3_monthly_ts}},
+\code{\link{m3_other_ts}}
 }
 \author{
 Cuong Sai, Andrey Davydenko, and Maxim Shcherbakov.

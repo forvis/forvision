@@ -11,7 +11,7 @@
 #' @seealso \code{\link{validateFTS}}
 #'
 #' @examples
-#' validateTSTS(example1_TSTS)
+#' validateTSTS(example1_ts)
 #'
 #' @export
 

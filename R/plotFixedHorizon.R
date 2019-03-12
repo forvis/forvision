@@ -28,8 +28,8 @@
 #' @keywords explore
 #' @examples
 #' # obtain data
-#' ts <- example1_TSTS
-#' fc <- example1_FTS
+#' ts <- example1_ts
+#' fc <- example1_fc
 #'
 #' # create the "timestamp_dbo" column
 #' library(zoo)

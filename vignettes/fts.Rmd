@@ -40,6 +40,6 @@ Each table line corresponds to all the forecasting results obtained for a given 
 
 ```{r}
 library(forvision)
-head(example1_FTS, 10)
+head(m3_yearly_fc, 10)
 ```
 

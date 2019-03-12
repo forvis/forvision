@@ -25,7 +25,7 @@
 #' \code{\link{calculateSMAPE}}, \code{\link{calculateMASE}}
 #' @keywords evaluate
 #' @examples
-#' af <- createAFTS(example1_TSTS, example1_FTS)
+#' af <- createAFTS(example1_ts, example1_fc)
 #' acc <- calculateMdAPE(af)
 #' acc$accuracy
 #' acc$rank

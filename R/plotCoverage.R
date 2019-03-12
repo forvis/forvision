@@ -26,7 +26,7 @@
 #' \emph{Seventh International Conference on System Modelling & Advancement on Research Trends}, 145-149. Moradabad, India.
 #' @keywords evaluate
 #' @examples
-#' af <- createAFTS(example1_TSTS, example1_FTS)
+#' af <- createAFTS(example1_ts, example1_fc)
 #' plotCoverage(af, pi = 90, methods = c("A", "B"))
 #' plotCoverage(af, pi = 90, horizons = 1:2)
 #'

@@ -20,7 +20,7 @@ Checks if the input data is correctly formatted in accordance with the Forecast 
 Checks that fc contains necessary column and the composite primary key values are not duplicated.
 }
 \examples{
-validateFTS(example1_FTS)
+validateFTS(example1_fc)
 
 }
 \seealso{

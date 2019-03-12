@@ -31,8 +31,8 @@
 #' @keywords evaluate
 #'
 #' @examples
-#' ts <- example1_TSTS
-#' af <- createAFTS(example1_TSTS, example1_FTS)
+#' ts <- example1_ts
+#' af <- createAFTS(example1_ts, example1_fc)
 #' acc <- calculateMASE(ts, af)
 #' acc$accuracy
 #' acc$rank

@@ -17,7 +17,7 @@ Prints summary info for forecasts.
 Outputs summary info containing the number of series, number of forecasts, origin range, period range, etc.
 }
 \examples{
-printForecastSummary(example1_FTS)
+printForecastSummary(example1_fc)
 
 }
 \seealso{
