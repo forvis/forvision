@@ -97,10 +97,18 @@ plotFixedOrigin <- function(ts, fc = NULL, series, origin, method = NULL ) {
     df2 <- cbind(df[method[1:length(method)]])
     xts2 <- xts::xts(df2, order.by=time)
     out <- cbind(xts1, xts2)
-    dygraphs::dygraph(out, main = series, xlab = "Time") %>%
-      dygraphs::dyRangeSelector(height = 20) %>%
-      dygraphs::dyOptions(drawPoints = TRUE, pointSize = 2) %>%
-      dygraphs::dyLegend(width = 300)
-    }
+    p <- dygraphs::dygraph(out, main = series, xlab = "Time") %>%
+         dygraphs::dyRangeSelector(height = 20) %>%
+         dygraphs::dyOptions(drawPoints = TRUE, pointSize = 2) %>%
+         dygraphs::dyLegend(width = 300)
+  }
+  a <- length(time(xts1)) - length(time(xts2))
+  p <- p %>% dygraphs::dyEvent(time(xts1)[a], "Forecast origin", labelLoc = "bottom", strokePattern = "dotted")
+  p <- p %>% dygraphs::dyShading(from = time(xts1)[a], to = time(xts1)[length(time(xts1))], color = "#F5F5F5")
+  # p <- p %>% dygraphs::dyOptions(includeZero = TRUE,
+  #                      axisLineColor = "navy",
+  #                      gridLineColor = "lightblue")
+
+  p
 }
 

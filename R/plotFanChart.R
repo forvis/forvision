@@ -68,12 +68,13 @@ plotFan <- function(ts, fc, series, origin, method){
   M2 <- dplyr::filter(ts, series_id == series)
 
   xts1 <- xts::xts(M2$value, order.by=M2$timestamp_dbo)
-  names(xts1) <- "TS"
+  names(xts1) <- "actuals"
   # dplyr::filter data
   fc_data <- dplyr::select(M, forecast)
   lo_data <- dplyr::select(M, dplyr::starts_with("lo"))
   hi_data <- dplyr::select(M, dplyr::starts_with("hi"))
   df_total <- cbind(fc_data, lo_data, hi_data)
+  df_total <- df_total %>%  dplyr::mutate(fit = forecast)
   # convert to XTS object
   df_total <- xts::xts(df_total, order.by=M$timestamp_dbo)
   #dplyr::filter names
@@ -85,10 +86,19 @@ plotFan <- function(ts, fc, series, origin, method){
   #
   lab <- gsub("lo", "PI", lo_names)
   out <- cbind(xts1, df_total)
-  p <- dygraphs::dygraph(out, main = paste("Fanchart of", series), xlab = "Time") %>% dygraphs::dyRangeSelector(height = 20) %>%
-       dygraphs::dyOptions(drawPoints = TRUE, pointSize = 2)
+  p <- dygraphs::dygraph(out, main = series, xlab = "Time") %>%
+      dygraphs::dyRangeSelector(height = 20) %>%
+      dygraphs::dyOptions(drawPoints = TRUE, pointSize = 2) %>%
+      dygraphs::dyLegend(width = 300)
+  p <- p %>% dygraphs::dySeries("actuals", color = "cornflowerblue", strokePattern = "dashed")
+  col <- c("green", "darkturquoise", "burlywood1", "greenyellow", "lightsteelblue1", "orange")
   for (i in 1:length(lo_names)) {
-    p <- p %>% dygraphs::dySeries(c(lo_names[i], "forecast", hi_names[i]), label = lab[i])
+    p <- p %>% dygraphs::dySeries(c(lo_names[i], "fit", hi_names[i]), label = lab[i], color = col[i])
   }
+ a <- length(time(xts1)) - length(time(df_total))
+ p <- p %>% dygraphs::dyEvent(time(xts1)[a], "Forecast origin", labelLoc = "bottom", strokePattern = "dotdash")
+ p <- p %>% dygraphs::dyShading(from = time(xts1)[a], to = time(xts1)[length(time(xts1))], color = "#F5F5F5")
+ p <- p %>% dygraphs::dySeries("forecast", label = method, color = "red") %>%
+   dygraphs::dyLegend(show = "always")
  p
 }
