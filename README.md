@@ -3,9 +3,9 @@
 [![Travis-CI Build
 Status](https://travis-ci.org/forvis/forvision.svg?branch=master)](https://travis-ci.org/forvis/forvision)
 
-# forvision
+# Forvision
 
-forvision is an R package for forecasting accuracy evaluation and
+Forvision is an R package for forecasting accuracy evaluation and
 visualization
 
 ## Installation
