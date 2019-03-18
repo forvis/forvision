@@ -1,6 +1,6 @@
-Package: forvision
+Package: Forvision
 Type: Package
-Title: Forecast Evaluation and Visualization
+Title: Tools for forecast visualisation and evaluation
 Version: 0.0.1
 Date: 2019-01-30
 Authors@R: c(
