@@ -1,0 +1,159 @@
+#' Fan chart
+#'
+#' Draws a fan chart for forecasts for a specified method, time series, and origin.
+#'
+#' @aliases plotFan
+#' @param ts dataframe containing time series actuals formatted using the Time Series Table Schema (TSTS),
+#'  use \code{showTSTS()} to display schema specification details. \code{ts} must contain \code{timestamp_dbo} column with
+#'  timestamps formatted as an appropriate time-based object.
+#' @param fc dataframe containing forecasts formatted using the Forecast Table Schema (FTS), use \code{showFTS()}
+#' to display schema specification details. \code{fc} must contain \code{timestamp_dbo} column with timestamps formatted
+#' as an appropriate time-based object.
+#' @param series series_id for the time series to be shown.
+#' @param origin origin_timestamp for the origin of the forecast to be shown.
+#' @param method method_id for the method to be shown.
+#' @param graphLib choose method for disp
+#' @details Generates a fan chart joining a simple line chart for actuals (given in the TSTS format) with
+#' ranges for possible future values (given in the FTS format). Uses all the prediction intervals available in fc.
+#'
+#' Current time-based objects supported are \code{Date}, \code{POSIXct}, \code{chron},
+#' \code{yearmon}, \code{yearqtr}, and \code{timeDate}.
+#' @return A dygraph object with  the fan chart.
+#' @author Cuong Sai, Andrey Davydenko, and Maxim Shcherbakov.
+#' @seealso \code{\link{plotFixedHorizon}}, \code{\link{plotFixedOrigin}}
+#' @keywords explore
+#' @examples
+#' # obtain data
+#' ts <- example1_ts
+#' fc <- example1_fc
+#'
+#' # create the "timestamp_dbo" column
+#' library(zoo)
+#' ts$timestamp_dbo <- as.yearmon(ts$timestamp, format = '%Y')
+#' fc$timestamp_dbo <- as.yearmon(fc$timestamp, '%Y')
+#'
+#' # plot the fan chart for some given origin, series, and method
+#' plotFan(ts, fc, "Y1", "1988", "A")
+#' \dontrun{
+#' # produces error because the input dataframes do not contain the "timestamp_dbo" column
+#' plotFan(example1_TSTS, example1_FTS, "Y1", "1988", "A")
+#' }
+#'
+#'
+#' @export
+
+
+plotFan <- function(ts, fc, series, origin, method, graphLib = "dygraph"){
+  # Error handling
+  # For TSTS schema
+  if (!is.data.frame(ts)){
+    stop("Argument ts should be a data frame.")
+  }
+  if (!sum(is.element(c("series_id", "timestamp_dbo", "value"), colnames(ts))) == 3) {
+    stop("Check the column names of input data frame ts. The input data ts needed in the form of
+         a data frame containing columns named  'series_id', value, and 'timestamp_dbo'.")
+  }
+
+  # For FTS schema
+  if (!is.data.frame(fc)){
+    stop("Argument fc should be a data frame.")
+  }
+  if (!sum(is.element(c("series_id", "timestamp", "method_id", "forecast"), colnames(fc))) == 4) {
+    stop("Check the column names of input data frame fc. The input data fc needed in the form of
+         a data frame containing columns named  'series_id', forecast, method_id, and 'timestamp'.")
+  }
+  #
+  if (graphLib == "ggplot"){
+    n.levels <- 3
+    shade.cols = RColorBrewer::brewer.pal(n.levels, "PuBuGn")
+    line.cols = c("blue", "red")
+    fc <- dplyr::filter(fc, series_id == series & method_id == method & origin_timestamp == origin)
+    ts <- dplyr::filter(ts, series_id == series)
+    df <- dplyr::left_join(ts, fc, by = c("timestamp_dbo", "series_id", "timestamp"))
+    df$timestamp_dbo <- as.Date(df$timestamp_dbo)
+    df <- dplyr::select(df, timestamp_dbo, value, forecast,lo80, hi80,lo90,hi90)
+    df <- dplyr::select(df, timestamp_dbo, value, forecast,lo80, hi80,lo90,hi90, everything())
+    df <- rename(df, date = timestamp_dbo)
+    a <- length(ts$timestamp) - length(fc$timestamp)
+    #
+    lo_data <- dplyr::select(df, dplyr::starts_with("lo"))
+    hi_data <- dplyr::select(df, dplyr::starts_with("hi"))
+    lo_names <- colnames(lo_data)
+    hi_names <- colnames(hi_data)
+    # order by name
+    lo_names <- lo_names[order(lo_names)]
+    hi_names <- hi_names[order(hi_names)]
+    #
+    lab <- gsub("lo", "PI", lo_names)
+    #create plot
+    p <- ggplot2::ggplot(data = df, aes(date, value)) +
+      ggplot2::geom_ribbon(data = df, aes(date, ymin = lo90, ymax = hi90, fill = "90%")) +
+      ggplot2::geom_ribbon(data = df, aes(date, ymin = lo80, ymax = hi80, fill = "80%")) +
+      ggplot2::geom_line(data = df, aes(date, value, colour = "Value"), size = 1)+
+      #ggplot2::geom_point(data = df, aes(date, value, colour = "Value"), size = 1.5)+
+      ggplot2::geom_line(data = df, aes(date, forecast, colour = "Forecast"), size = 1) +
+      ggplot2::geom_point(data = df, aes(date, forecast, colour = "Forecast"), size = 1.5) +
+      geom_point(aes(colour = "Value"))+
+      scale_colour_manual(name = "Data",
+                          values = c("Value" = line.cols[1],
+                                     "Forecast" = line.cols[2]),
+                          breaks = c("Value", "Forecast")) +
+      scale_fill_manual(name = "Intervals",
+                        values = c( "90%" = shade.cols[2],
+                                    "80%" = shade.cols[3])) +
+      guides(colour = guide_legend(order = 1), fill = guide_legend(order = 2)) +
+      labs(title = series,
+           x = "Time",
+           y = NULL)+
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
+      geom_vline(aes(xintercept=df$date[a]),
+                linetype=4, colour="black", size = 1) +
+      geom_text(aes(x = df$date[a-1], y = min(df$value) + 250, label = "Forecast Origin"),
+                angle = 90, colour="black", size = 3.5)
+
+p
+  }
+
+# dygrap
+  if (graphLib == "dygraph"){
+  # dplyr::filter data
+  M <- dplyr::filter(fc, series_id == series & method_id == method & origin_timestamp == origin)
+  M2 <- dplyr::filter(ts, series_id == series)
+
+  xts1 <- xts::xts(M2$value, order.by=M2$timestamp_dbo)
+  names(xts1) <- "actuals"
+  # dplyr::filter data
+  fc_data <- dplyr::select(M, forecast)
+  lo_data <- dplyr::select(M, dplyr::starts_with("lo"))
+  hi_data <- dplyr::select(M, dplyr::starts_with("hi"))
+  df_total <- cbind(fc_data, lo_data, hi_data)
+  df_total <- df_total %>%  dplyr::mutate(fit = forecast)
+  # convert to XTS object
+  df_total <- xts::xts(df_total, order.by=M$timestamp_dbo)
+  #dplyr::filter names
+  lo_names <- colnames(lo_data)
+  hi_names <- colnames(hi_data)
+  # order by name
+  lo_names <- lo_names[order(lo_names)]
+  hi_names <- hi_names[order(hi_names)]
+  #
+  lab <- gsub("lo", "PI", lo_names)
+  out <- cbind(xts1, df_total)
+  p <- dygraphs::dygraph(out, main = series, xlab = "Time") %>%
+      dygraphs::dyRangeSelector(height = 20) %>%
+      dygraphs::dyOptions(drawPoints = TRUE, pointSize = 2) %>%
+      dygraphs::dyLegend(width = 300)
+  p <- p %>% dygraphs::dySeries("actuals", color = "cornflowerblue", strokePattern = "dashed")
+  col <- c("green", "darkturquoise", "burlywood1", "greenyellow", "lightsteelblue1", "orange")
+  for (i in 1:length(lo_names)) {
+    p <- p %>% dygraphs::dySeries(c(lo_names[i], "fit", hi_names[i]), label = lab[i], color = col[i])
+  }
+ a <- length(time(xts1)) - length(time(df_total))
+ p <- p %>% dygraphs::dyEvent(time(xts1)[a], "Forecast origin", labelLoc = "bottom", strokePattern = "dotdash")
+ p <- p %>% dygraphs::dyShading(from = time(xts1)[a], to = time(xts1)[length(time(xts1))], color = "#F5F5F5")
+ p <- p %>% dygraphs::dySeries("forecast", label = method, color = "red") %>%
+   dygraphs::dyLegend(show = "always")
+p
+  }
+print(p)
+}

@@ -4,7 +4,8 @@
 \alias{plotFixedHorizon}
 \title{Fixed horizon graph}
 \usage{
-plotFixedHorizon(ts, fc = NULL, series, h, method = NULL)
+plotFixedHorizon(ts, fc = NULL, series, h, method = NULL,
+  graphLib = "dygraph")
 }
 \arguments{
 \item{ts}{dataframe containing time series actuals formatted using the Time Series Table Schema (TSTS),

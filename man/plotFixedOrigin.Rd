@@ -4,7 +4,8 @@
 \alias{plotFixedOrigin}
 \title{Fixed origin graph}
 \usage{
-plotFixedOrigin(ts, fc = NULL, series, origin, method = NULL)
+plotFixedOrigin(ts, fc = NULL, series, origin, method = NULL,
+  graphLib = "dygraph")
 }
 \arguments{
 \item{ts}{dataframe containing time series actuals formatted using the Time Series Table Schema (TSTS),

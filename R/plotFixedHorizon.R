@@ -45,7 +45,7 @@
 #'
 #' @export
 
-plotFixedHorizon <- function(ts, fc = NULL, series, h , method = NULL ) {
+plotFixedHorizon <- function(ts, fc = NULL, series, h , method = NULL, graphLib = "dygraph" ) {
   # Error handling
   # For TSTS schema
   if (!is.data.frame(ts)){
@@ -60,33 +60,34 @@ plotFixedHorizon <- function(ts, fc = NULL, series, h , method = NULL ) {
     stop("The column timestamp_dbo of TSTS schema requires an appropriate time-based object")
   }
 
-  # dplyr::filter data
-  M2 <- dplyr::filter(ts, series_id == series)
-  xts1 <- xts::xts(M2$value, order.by=M2$timestamp_dbo)
-  names(xts1) <- "TS"
+  if (graphLib == "dygraph"){
+    # dplyr::filter data
+    M2 <- dplyr::filter(ts, series_id == series)
+    xts1 <- xts::xts(M2$value, order.by=M2$timestamp_dbo)
+    names(xts1) <- "TS"
 
-  if (is.null(fc)) {
-    dygraphs::dygraph( xts1, main = paste("Graph of",series), xlab = "Time") %>%
-      dygraphs::dyRangeSelector(height = 20) %>%
-      dygraphs::dyOptions(drawPoints = TRUE, pointSize = 2)
-  } else {
-    # For FTS schema
-    if (!is.data.frame(fc)){
-      stop("Argument fc should be a data frame.")
-    }
-    if (!sum(is.element(c("series_id", "timestamp_dbo", "method_id", "forecast"), colnames(fc))) == 4) {
-      stop("Check the column names of input data frame fc. The input data ts needed in the form of
+      if (is.null(fc)) {
+        dygraphs::dygraph( xts1, main = paste("Graph of",series), xlab = "Time") %>%
+        dygraphs::dyRangeSelector(height = 20) %>%
+        dygraphs::dyOptions(drawPoints = TRUE, pointSize = 2)
+      } else {
+      # For FTS schema
+        if (!is.data.frame(fc)){
+          stop("Argument fc should be a data frame.")
+        }
+        if (!sum(is.element(c("series_id", "timestamp_dbo", "method_id", "forecast"), colnames(fc))) == 4) {
+          stop("Check the column names of input data frame fc. The input data ts needed in the form of
            a data frame containing columns named  'series_id', forecast, method_id, and 'timestamp_dbo'.")
-    }
-    if (!xts::is.timeBased(fc$timestamp_dbo)) {
-      stop("The column timestamp_dbo of FTS shema requires an appropriate time-based object")
-    }
-    M <- dplyr::filter(fc, series_id == series & horizon == h)
+        }
+        if (!xts::is.timeBased(fc$timestamp_dbo)) {
+        stop("The column timestamp_dbo of FTS shema requires an appropriate time-based object")
+        }
+        M <- dplyr::filter(fc, series_id == series & horizon == h)
 
-    time <- M[1:length(unique(M$origin_timestamp)),]$timestamp_dbo
-    out <- matrix(NA, nrow = length(unique(M$origin_timestamp)), ncol = length(unique(M$method)))
-    df = data.frame(out)
-    colnames(df) <- unique(M$method)
+        time <- M[1:length(unique(M$origin_timestamp)),]$timestamp_dbo
+        out <- matrix(NA, nrow = length(unique(M$origin_timestamp)), ncol = length(unique(M$method)))
+        df = data.frame(out)
+        colnames(df) <- unique(M$method)
 
     for(i in as.vector(unique(M$method_id))){
       df[, i] <- dplyr::filter(M, method_id == i)$forecast
@@ -101,4 +102,52 @@ plotFixedHorizon <- function(ts, fc = NULL, series, h , method = NULL ) {
       dygraphs::dyLegend(width = 300)
   }
   }
+  if (graphLib == "ggplot"){
+    ts <- dplyr::filter(ts, series_id == series)
+    ts$timestamp_dbo <- as.Date(ts$timestamp_dbo)
+    ts <- dplyr::rename(ts, date = timestamp_dbo)
+     if (is.null(fc)) {
+       p <- ggplot2::ggplot(data = ts, ggplot2::aes(date, value)) +
+            ggplot2::geom_line(size = 1, colour = "blue") +
+            ggplot2::geom_point(size = 2)+
+            ggplot2::labs(title = series,
+                          x = "Time",
+                          y = NULL)+
+            ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+       p
+     } else{
+        if (!is.data.frame(fc)){
+          stop("Argument fc should be a data frame.")
+        }
+        if (!sum(is.element(c("series_id", "timestamp_dbo", "method_id", "forecast"), colnames(fc))) == 4) {
+          stop("Check the column names of input data frame fc. The input data ts needed in the form of
+           a data frame containing columns named  'series_id', forecast, method_id, and 'timestamp_dbo'.")
+        }
+        if (!xts::is.timeBased(fc$timestamp_dbo)) {
+          stop("The column timestamp_dbo of FTS shema requires an appropriate time-based object")
+        }
+       fc <- dplyr::filter(fc, series_id == series, horizon == h, method_id %in% method)
+       fc$timestamp_dbo <- as.Date(fc$timestamp_dbo)
+       fc <- dplyr::rename(fc, date = timestamp_dbo)
+       a <- length(ts$timestamp) - (length(fc$timestamp)/length(method))
+       p <- ggplot2::ggplot(data = ts, ggplot2::aes(date, value)) +
+         ggplot2::geom_line(size = 1, colour = "blue") +
+         ggplot2::geom_point(size = 2, colour = "blue") +
+         ggplot2::geom_line(data = fc, ggplot2::aes(date, forecast, colour = method_id), size = 1)+
+         ggplot2::geom_point(data = fc, ggplot2::aes(date, forecast, colour = method_id, shape = method_id),
+                             size = 2)+
+         ggplot2::labs(title = series,
+                       x = "Time",
+                       y = NULL)+
+         ggplot2::geom_vline(ggplot2::aes(xintercept=ts$date[a]),
+                             linetype=4, colour="black", size = 1) +
+         ggplot2::geom_text(ggplot2::aes(x = ts$date[a - 1], y = min(ts$value) + 250, label = "Forecast Origin"),
+                            angle = 90, colour="black", size = 3.5)+
+         ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+       p
+     }
+
+  }
+}
 
