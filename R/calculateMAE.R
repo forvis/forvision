@@ -96,12 +96,12 @@ calculateMAE <- function(af, sort = FALSE, digits = 3){
   # plots MdAPEs frame
   gp1 <- ggplot2::ggplot(df2, ggplot2::aes(x=horizon, y=MdAPE, group=method_id,color=method_id, shape=method_id))+
     ggplot2::scale_shape_manual(values=1:nlevels(df2$method_id)) +
-    ggplot2::labs(title = "MAE for different horizons and methods") +
+    ggplot2::labs(title = "MAE for different horizons and methods", y = "MAE") +
     ggplot2::geom_line() +
     ggplot2::geom_point(size=3)+
     ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-  # Create outputlist for MAE and rank of MdAPE
+  # Create outputlist for MAE and rank of MAE
   outlist <- list("accuracy" = df, "rank" =ranks, "plot" = gp1)
 
   # using sorting if TRUE
