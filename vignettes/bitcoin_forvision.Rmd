@@ -1,0 +1,71 @@
+---
+title: "Bitcoin прогноз"
+author: "Cuong Sai"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: show
+    fig_caption: yes
+    highlight: textmate
+    theme: spacelab
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Load наборы данных с rolling-origin
+
+```{r, warning= FALSE, message=FALSE}
+library(tidyverse)
+bitcoin_ts <- read_csv("D:/01_Projects/bitcoin/bitcoin_ts.csv")
+bitcoin_fc <- read_csv("D:/01_Projects/bitcoin/bitcoin_fc.csv")
+```
+
+```{r}
+knitr::kable(head(bitcoin_ts))
+knitr::kable(head(bitcoin_fc))
+```
+
+## 2. Построить coverage diagram 
+
+### 2.1 для auto.arima
+```{r, warning=FALSE, message=FALSE}
+library(forvision)
+bitcoin_af <- createAFTS(bitcoin_ts, bitcoin_fc)
+plotCoverage(bitcoin_af, pi = 70, methods = "auto.arima", horizons = 1:9)
+```
+
+```{r}
+plotCoverage(bitcoin_af, pi = 90, methods = "auto.arima", horizons = 10:19)
+```
+
+
+### 2.2 для auto.ets
+
+```{r}
+plotCoverage(bitcoin_af, pi = 70, methods = "auto.ets", horizons = 1:9)
+```
+
+```{r}
+plotCoverage(bitcoin_af, pi = 90, methods = "auto.ets", horizons = 10:19)
+```
+
+### 2.3 для naive
+```{r}
+plotCoverage(bitcoin_af, pi = 70, methods = "naive", horizons = 1:9)
+```
+
+```{r}
+plotCoverage(bitcoin_af, pi = 90, methods = "naive", horizons = 10:19)
+```
+
+##

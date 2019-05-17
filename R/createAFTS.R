@@ -42,6 +42,6 @@ createAFTS <-function(ts, fc) {
   }
   #
     df <- dplyr::inner_join(ts, fc, by = c("series_id", "timestamp"))
-
+    df <- dplyr::arrange(df, origin_timestamp, horizon)
   return(df)
 }

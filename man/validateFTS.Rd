@@ -7,7 +7,7 @@
 validateFTS(fc)
 }
 \arguments{
-\item{fc}{dataframe containing forecasts formatted using the Forecast Table Schema (FTS),
+\item{fc}{dataframe containing forecasts formatted using the Forecast Table Schema(FTS),
 use \code{showFTS()} to display schema specification details.}
 }
 \value{

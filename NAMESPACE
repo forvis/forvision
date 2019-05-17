@@ -2,9 +2,11 @@
 
 export(calculateAvgRelMAE)
 export(calculateCoverage)
+export(calculateMAE)
 export(calculateMAPE)
 export(calculateMASE)
 export(calculateMdAPE)
+export(calculateRMSE)
 export(calculateSMAPE)
 export(createAFTS)
 export(plotCoverage)

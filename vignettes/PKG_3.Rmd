@@ -1,0 +1,30 @@
+---
+title: "PKG_3"
+output: html_notebook
+---
+
+```{r}
+# load reg_af data
+regpi_af <- read.csv("D:/01_Projects/R-PredictiveMiantenance/regpi_af.csv")
+
+# load library forvision 
+library(forvision)
+```
+
+```{r}
+acc <-  calculateRMSE(reg_af)
+```
+
+
+```{r}
+acc$accuracy
+```
+
+```{r}
+acc$plot
+```
+
+```{r}
+acc$rank
+```
+

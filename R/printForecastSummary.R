@@ -22,7 +22,7 @@ printForecastSummary <- function(fc) {
     time_range_max <- max(as.character(fc$timestamp))
     origin_range_min <- min(as.character(fc$origin_timestamp))
     origin_range_max <- max(as.character(fc$origin_timestamp))
-    num_method <- length(unique(fc$method))
+    num_method <- length(unique(fc$method_id))
     num_forecasts <- length(fc$forecast)
     horizon_low <-  min(fc$horizon)
     horizon_hi <-  max(fc$horizon)

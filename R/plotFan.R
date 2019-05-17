@@ -43,7 +43,7 @@
 #' @export
 
 
-plotFan <- function(ts, fc, series, origin, method, graphLib = "dygraph"){
+plotFan <- function(ts, fc, series, origin, method, graphLib = "dygraphs", piColor="blue"){
   # Error handling
   # For TSTS schema
   if (!is.data.frame(ts)){
@@ -63,59 +63,78 @@ plotFan <- function(ts, fc, series, origin, method, graphLib = "dygraph"){
          a data frame containing columns named  'series_id', forecast, method_id, and 'timestamp'.")
   }
   #
-  if (graphLib == "ggplot"){
-    n.levels <- 3
-    shade.cols = RColorBrewer::brewer.pal(n.levels, "PuBuGn")
-    line.cols = c("blue", "red")
+  if (graphLib == "ggplot2"){
+
+    # subset data
     fc <- dplyr::filter(fc, series_id == series & method_id == method & origin_timestamp == origin)
     ts <- dplyr::filter(ts, series_id == series)
-    df <- dplyr::left_join(ts, fc, by = c("timestamp_dbo", "series_id", "timestamp"))
-    df$timestamp_dbo <- as.Date(df$timestamp_dbo)
-    df <- dplyr::select(df, timestamp_dbo, value, forecast,lo80, hi80,lo90,hi90)
-    df <- dplyr::select(df, timestamp_dbo, value, forecast,lo80, hi80,lo90,hi90, everything())
-    df <- rename(df, date = timestamp_dbo)
     a <- length(ts$timestamp) - length(fc$timestamp)
-    #
-    lo_data <- dplyr::select(df, dplyr::starts_with("lo"))
-    hi_data <- dplyr::select(df, dplyr::starts_with("hi"))
-    lo_names <- colnames(lo_data)
-    hi_names <- colnames(hi_data)
-    # order by name
-    lo_names <- lo_names[order(lo_names)]
-    hi_names <- hi_names[order(hi_names)]
-    #
-    lab <- gsub("lo", "PI", lo_names)
-    #create plot
-    p <- ggplot2::ggplot(data = df, aes(date, value)) +
-      ggplot2::geom_ribbon(data = df, aes(date, ymin = lo90, ymax = hi90, fill = "90%")) +
-      ggplot2::geom_ribbon(data = df, aes(date, ymin = lo80, ymax = hi80, fill = "80%")) +
-      ggplot2::geom_line(data = df, aes(date, value, colour = "Value"), size = 1)+
-      #ggplot2::geom_point(data = df, aes(date, value, colour = "Value"), size = 1.5)+
-      ggplot2::geom_line(data = df, aes(date, forecast, colour = "Forecast"), size = 1) +
-      ggplot2::geom_point(data = df, aes(date, forecast, colour = "Forecast"), size = 1.5) +
-      geom_point(aes(colour = "Value"))+
-      scale_colour_manual(name = "Data",
-                          values = c("Value" = line.cols[1],
-                                     "Forecast" = line.cols[2]),
-                          breaks = c("Value", "Forecast")) +
-      scale_fill_manual(name = "Intervals",
-                        values = c( "90%" = shade.cols[2],
-                                    "80%" = shade.cols[3])) +
-      guides(colour = guide_legend(order = 1), fill = guide_legend(order = 2)) +
-      labs(title = series,
-           x = "Time",
-           y = NULL)+
-      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
-      geom_vline(aes(xintercept=df$date[a]),
-                linetype=4, colour="black", size = 1) +
-      geom_text(aes(x = df$date[a-1], y = min(df$value) + 250, label = "Forecast Origin"),
-                angle = 90, colour="black", size = 3.5)
 
-p
-  }
+    #subset lower and upper data
+    lower_data <- dplyr::select(fc, dplyr::starts_with("lo"))
+    upper_data <- dplyr::select(fc, dplyr::starts_with("hi"))
+
+    # extract name of lower and upper
+    lower_names <- colnames(lower_data)
+    upper_names <- colnames(upper_data)
+    # order by name
+    lower_names<- lo_names[order(lower_names)]
+    upper_names <- hi_names[order(upper_names)]
+
+    # for PI
+    level <- as.numeric(gsub("lo", "", lower_names))
+    levels <- NROW(lower_names)
+
+    interval <- list()
+    for (i in 1:levels){
+      interval[[i]] <- data.frame(date = as.Date(fc$timestamp_dbo),
+                                  lower = unlist(fc[lower_names[i]]),
+                                  upper = unlist(fc[upper_names[i]]),
+                                  level = rep(level[i], length(fc[upper_names[i]])))
+    }
+    interval <- do.call(rbind, interval)
+    rownames(interval) <- NULL
+    interval$forecast <-  rep(fc$forecast, levels)
+    interval <- interval[order(interval$level, decreasing = TRUE), ] # Must be ordered for gg z-index
+
+    # prepare data
+    ts <- dplyr::select(ts, timestamp_dbo, value)
+    ts <- dplyr::rename(ts, date = timestamp_dbo)
+    ts$date <- as.Date(ts$date)
+    interval$level <- as.factor(interval$level)
+
+    # Initialise ggplot object
+    p <- ggplot2::ggplot()
+    p <- p + ggplot2::geom_line(data = interval, aes(x= date, y = forecast, linetype= "forecast",
+                                                     colour = "forecast"), size = 1) +
+    ggplot2::geom_point(data = interval, aes(x= date, y = forecast, shape = "forecast",
+                                                      colour = "forecast"), size = 2)+
+    ggplot2::geom_ribbon(data = interval, aes(date, ymin = lower, ymax = upper, fill = level))
+
+    # Create fill colour
+    fill_value <- c()
+    for (i in 1:levels) {
+      fill_value[i] <- adjustcolor(piColor, alpha.f= 1-(level/100)[i])
+    }
+
+    p <- p +scale_fill_manual(name = "prediction intervals", values = fill_value) +
+      ggplot2::geom_line(data = ts, ggplot2::aes(x=date, y=value,  linetype= "actual", colour = "actual"), size = 1) +
+      ggplot2::geom_point(data = ts, ggplot2::aes(x=date, y=value, shape="actual", colour = "actual"), size = 2) +
+      ggplot2::scale_colour_manual(name ="", values=c("actual" = "black", "forecast" = "red"))+
+      ggplot2::scale_linetype_manual(name ="", values=c("actual" ="solid", "forecast" ="dotted")) +
+      ggplot2::scale_shape_manual(name ="", values=c("actual" = 0, "forecast" = 5)) +
+      ggplot2::labs(title = "series", x = "Time", y = NULL)+
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
+      ggplot2::geom_vline(aes(xintercept=df$date[a]),
+                 linetype = "longdash", colour="black", size = 1) +
+      ggplot2::geom_text(aes(x = df$date[a-1], y = min(df$value) + 250, label = "Forecast Origin"),
+                angle = 90, colour="black", size = 3.5,
+                fontface = "italic")
+    p
+}
 
 # dygrap
-  if (graphLib == "dygraph"){
+  if (graphLib == "dygraphs"){
   # dplyr::filter data
   M <- dplyr::filter(fc, series_id == series & method_id == method & origin_timestamp == origin)
   M2 <- dplyr::filter(ts, series_id == series)
@@ -142,18 +161,28 @@ p
   p <- dygraphs::dygraph(out, main = series, xlab = "Time") %>%
       dygraphs::dyRangeSelector(height = 20) %>%
       dygraphs::dyOptions(drawPoints = TRUE, pointSize = 2) %>%
-      dygraphs::dyLegend(width = 300)
-  p <- p %>% dygraphs::dySeries("actuals", color = "cornflowerblue", strokePattern = "dashed")
-  col <- c("green", "darkturquoise", "burlywood1", "greenyellow", "lightsteelblue1", "orange")
+      dygraphs::dyLegend(width = 800)
+  p <- p %>% dygraphs::dySeries("actuals", color = "black", strokePattern = "dashed")
+
+  # Create fill colour
+
+  # for PI
+  level <- as.numeric(gsub("lo", "", lo_names))
+  levels <- NROW(lo_names)
+  fill_value <- c()
+  for (i in 1:levels) {
+    fill_value[i] <- adjustcolor(piColor, alpha.f= 1-(level/100)[i])
+  }
+  shade.cols = RColorBrewer::brewer.pal(levels, "PuBuGn")
   for (i in 1:length(lo_names)) {
-    p <- p %>% dygraphs::dySeries(c(lo_names[i], "fit", hi_names[i]), label = lab[i], color = col[i])
+    p <- p %>% dygraphs::dySeries(c(lo_names[i], "fit", hi_names[i]), label = lab[i], color = fill_value[i])
   }
  a <- length(time(xts1)) - length(time(df_total))
  p <- p %>% dygraphs::dyEvent(time(xts1)[a], "Forecast origin", labelLoc = "bottom", strokePattern = "dotdash")
  p <- p %>% dygraphs::dyShading(from = time(xts1)[a], to = time(xts1)[length(time(xts1))], color = "#F5F5F5")
  p <- p %>% dygraphs::dySeries("forecast", label = method, color = "red") %>%
-   dygraphs::dyLegend(show = "always")
-p
+   dygraphs::dyLegend(show = "always") %>%
+   dygraphs::dyLegend(width = 550)
   }
-print(p)
+  return(p)
 }

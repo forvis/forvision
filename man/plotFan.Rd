@@ -4,7 +4,8 @@
 \alias{plotFan}
 \title{Fan chart}
 \usage{
-plotFan(ts, fc, series, origin, method, graphLib = "dygraph")
+plotFan(ts, fc, series, origin, method, graphLib = "dygraphs",
+  piColor = "blue")
 }
 \arguments{
 \item{ts}{dataframe containing time series actuals formatted using the Time Series Table Schema (TSTS),

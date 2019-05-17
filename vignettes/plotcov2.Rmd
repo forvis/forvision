@@ -1,37 +1,35 @@
-#' Coverage Probability Plot
-#'
-#' Generates a coverage probability plot showing coverage probability estimates,
-#' corresponding error bands, and nominal coverage probability.
-#'
-#'
-#' @aliases plotCoverage
-#'
-#' @param af dataframe containing forecast data formatted using the Actual and
-#' Forecast Table Schema (AFTS), use \code{showAFTS()} to display schema specification details.
-#' @param pi nominal coverage probability (confidence level for the prediction interval to be assessed).
-#' @param methods array containing method_id values for methods to be shown on the graph,
-#' if NULL, all available methods will be shown.
-#' @param horizons array containing horizons to be shown on the graph,
-#' if NULL, all available horizons will be shown.
-#' @param conf.level confidence level for coverage probability estimates, default 0.95.
-#' @param coord.flip use FALSE for horizontal bar chart, TRUE for vertical.
-#' @return Returns a ggplot2 object containing the coverage probability plot.
-#' @details Generates a bar chart showing coverage percentages for the given nominal coverage
-#' (Sai, Davydenko, and Shcherbakov, 2018). The results are confined to methods contained in methods
-#' and horizons contained in horizons. Adds error bars and nominal coverage line to chart.
-#'
-#'
-#' @author Cuong Sai, Andrey Davydenko, and Maxim Shcherbakov.
-#' @references Sai, C., Davydenko, A., & Shcherbakov, M. (2018, November). \href{https://forvis.github.io/our-publications/1.pdf}{Data schemas for forecasting (with examples in R).}
-#' \emph{Seventh International Conference on System Modelling & Advancement on Research Trends}, 145-149. Moradabad, India.
-#' @keywords evaluate
-#' @examples
-#' af <- createAFTS(example1_ts, example1_fc)
-#' plotCoverage(af, pi = 90, methods = c("A", "B"))
-#' plotCoverage(af, pi = 90, horizons = 1:2)
-#'
-#' @export
+---
+title: "plotCoverage2"
+author: "Cuong Sai"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: show
+    fig_caption: yes
+    highlight: textmate
+    theme: spacelab
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+## 1. Load AFTS data
+
+```{r}
+bitcoin_af <- read.csv("D:/01_Projects/bitcoin/bitcoin_af.csv")
+```
+
+```{r, include=FALSE}
 plotCoverage <- function(af, pi, methods = NULL,
                          horizons = NULL,  conf.level = 0.95,
                          coord.flip = FALSE) {
@@ -42,10 +40,10 @@ plotCoverage <- function(af, pi, methods = NULL,
   }
 
   if (!is.null(methods)) {
-    af <- dplyr::filter(af, method_id %in% methods)
+    af <- dplyr::filter(af, method_id == methods)
   }
   if (!is.null(horizons)) {
-    af <- dplyr::filter(af, horizon %in% horizons)
+    af <- dplyr::filter(af, horizon == horizons)
   }
   # dplyr::filter data
   lo <- paste0("lo", pi)
@@ -83,9 +81,9 @@ plotCoverage <- function(af, pi, methods = NULL,
   for (i in 1:length(df1$n_forecasts)){
     empirical_hitrate[i] <-  df1$n_hits[i]/df1$n_forecasts[i]
     lo[i] <- stats::binom.test(df1$n_hits[i], df1$n_forecasts[i],
-                               conf.level = conf.level)$conf.int[1]
+                                      conf.level = conf.level)$conf.int[1]
     hi[i] <- stats::binom.test(df1$n_hits[i], df1$n_forecasts[i],
-                               conf.level = conf.level)$conf.int[2]
+                                      conf.level = conf.level)$conf.int[2]
   }
   # add percentage and lo, hi columns into data frame as input
   df1$empirical_hitrate <- empirical_hitrate*100
@@ -114,9 +112,9 @@ plotCoverage <- function(af, pi, methods = NULL,
   limits <- ggplot2::aes(ymax =  df2[,6],
                          ymin = df2[, 5])
 
-  # convert column method_id to factor
-
-  df2$method_id <- factor(df2$method_id, levels=unique(df2$method_id))
+# convert column method_id to factor
+  
+df2$method_id <- factor(df2$method_id, levels=unique(df2$method_id))
 
   p <- ggplot2::ggplot(df2, ggplot2::aes(x=method_id, empirical_hitrate, fill = method_id))
   p <- p + ggplot2::geom_bar(stat="identity")
@@ -141,3 +139,16 @@ plotCoverage <- function(af, pi, methods = NULL,
   return(list("table" = df2, "graph" = p))
   #return(df1)
 }
+```
+
+
+
+```{r}
+out <- plotCoverage(bitcoin_af, pi = 70, methods = "auto.arima")
+out$table
+```
+
+```{r, fig.width=10}
+out$graph
+```
+

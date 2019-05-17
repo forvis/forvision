@@ -3,7 +3,7 @@
 #' Checks if the input data is correctly formatted in accordance with the Forecast Table Schema (FTS).
 #'
 #' @aliases validateFTS
-#' @param fc dataframe containing forecasts formatted using the Forecast Table Schema (FTS),
+#' @param fc dataframe containing forecasts formatted using the Forecast Table Schema(FTS),
 #'  use \code{showFTS()} to display schema specification details.
 #' @return TRUE if the checks are passed, FALSE otherwise.
 #' @details Checks that fc contains necessary column and the composite primary key values are not duplicated.

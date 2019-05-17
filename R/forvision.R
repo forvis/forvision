@@ -19,7 +19,7 @@ NULL
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("method_id", "MAE",
 "forecast", "horizon", "origin_timestamp", "series_id", "value", "log_RelMAE",
 "othervar"))
-
+windowsFonts(Times=windowsFont("TT Times New Roman"))
 
 
 
