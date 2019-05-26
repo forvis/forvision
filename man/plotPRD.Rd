@@ -4,7 +4,8 @@
 \alias{plotPRD}
 \title{Prediction-Realization Diagram}
 \usage{
-plotPRD(af, useLogs = FALSE, xlim = NULL, ylim = NULL)
+plotPRD(af, useLogs = FALSE, xlim = NULL, ylim = NULL,
+  keepRatio = TRUE)
 }
 \arguments{
 \item{af}{dataframe containing forecast data formatted using the Actual and Forecast Table
@@ -15,6 +16,8 @@ Schema (AFTS), use \code{showAFTS()} to display schema specification details.}
 \item{xlim}{the minimum and maximum values for x-axis, if NULL, finds min/max values based on the data.}
 
 \item{ylim}{the minimum and maximum values for y-axis, if NULL, finds min/max values based on the data.}
+
+\item{keepRatio}{if TRUE, forces the 1:1 ratio for the graph cells. Default: keepRatio = TRUE}
 }
 \value{
 Returns a ggplot2 object.

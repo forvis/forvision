@@ -8,6 +8,7 @@
 #' @param useLogs if TRUE, uses logarithmic scales.
 #' @param xlim the minimum and maximum values for x-axis, if NULL, finds min/max values based on the data.
 #' @param ylim the minimum and maximum values for y-axis, if NULL, finds min/max values based on the data.
+#' @param keepRatio if TRUE, forces the 1:1 ratio for the graph cells. Default: keepRatio = TRUE
 #' @return Returns a ggplot2 object.
 #' @details  Generates a \href{https://forvis.github.io/our-publications/1.pdf}{prediction-realization diagram} for the given dataset.
 #' The diagram shows a scatter plot with actuals and forecasts.
@@ -22,7 +23,7 @@
 #'
 #' @export
 
-plotPRD <-function(af, useLogs = FALSE, xlim=NULL, ylim=NULL){
+plotPRD <-function(af, useLogs = FALSE, xlim=NULL, ylim=NULL, keepRatio = TRUE){
   # Error handling
   if (!is.data.frame(af)){
     stop("Argument af should be a data frame.")
@@ -38,7 +39,9 @@ plotPRD <-function(af, useLogs = FALSE, xlim=NULL, ylim=NULL){
     stop("Both columns value and forecast must be numeric")
   }
   #
-  df <- data.frame(x = c(0, min(af$value)), y = c(0, min(af$value)))
+  x_min <- min(min(af$value), min(af$forecast))
+  x_max <- max(max(af$value), max(af$forecast))
+  df <- data.frame(x = c(x_min, x_max), y = c(x_min, x_max))
   if (is.element(c("method_id"), colnames(af))){
     # convert column method_id to factor
     af$method_id <- as.factor(af$method_id)
@@ -51,7 +54,7 @@ plotPRD <-function(af, useLogs = FALSE, xlim=NULL, ylim=NULL){
            ggplot2::ggtitle("Prediction-Realization Diagram") +
            ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
            ggplot2::guides(linetype = ggplot2::guide_legend("")) +
-           ggplot2::geom_line(data = df, aes(x = x, y=y))
+           ggplot2::geom_line(data = df, ggplot2::aes(x = x, y=y))
     if(useLogs == TRUE) {
       gp1 <- gp1 + ggplot2::scale_x_continuous(trans=scales::log10_trans(),
                                                limits =xlim,
@@ -74,7 +77,7 @@ plotPRD <-function(af, useLogs = FALSE, xlim=NULL, ylim=NULL){
            ggplot2::ggtitle("Prediction-Realization Diagram") +
            ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
            ggplot2::guides(linetype = ggplot2::guide_legend("")) +
-           ggplot2::geom_line(data = df, aes(x = x, y=y))
+           ggplot2::geom_line(data = df, ggplot2::aes(x = x, y=y))
 
      if(useLogs == TRUE) {
        gp1 <- gp1+ggplot2::scale_x_continuous(trans=scales::log10_trans(),
@@ -89,7 +92,11 @@ plotPRD <-function(af, useLogs = FALSE, xlim=NULL, ylim=NULL){
                   ggplot2::scale_y_continuous(limits =ylim,
                                               labels = function(x) format(x, scientific = FALSE))
       }
-    }
+  }
+ if (keepRatio == TRUE){
+   gp1 <- gp1 + ggplot2::coord_fixed()
+
+ }
 
 print(gp1)
 }
