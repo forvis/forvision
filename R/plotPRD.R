@@ -49,12 +49,11 @@ plotPRD <-function(af, useLogs = FALSE, xlim=NULL, ylim=NULL, keepRatio = TRUE){
     gp1 <- ggplot2::ggplot()+
            ggplot2::geom_point(data = af, ggplot2::aes(x = forecast, y= value,colour = method_id,shape = method_id)) +
            ggplot2::scale_shape_manual(values=1:nlevels(af$method_id))+
-           ggplot2::geom_line(data = af, ggplot2::aes(x = value, y = value, linetype = "perfect forecast")) +
+           ggplot2::geom_line(data = df, ggplot2::aes(x = x, y=y, linetype = "perfect forecast")) +
            ggplot2::geom_point(size=3)+
            ggplot2::ggtitle("Prediction-Realization Diagram") +
            ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
-           ggplot2::guides(linetype = ggplot2::guide_legend("")) +
-           ggplot2::geom_line(data = df, ggplot2::aes(x = x, y=y))
+           ggplot2::guides(linetype = ggplot2::guide_legend(""))
     if(useLogs == TRUE) {
       gp1 <- gp1 + ggplot2::scale_x_continuous(trans=scales::log10_trans(),
                                                limits =xlim,
@@ -72,12 +71,11 @@ plotPRD <-function(af, useLogs = FALSE, xlim=NULL, ylim=NULL, keepRatio = TRUE){
   } else {
     gp1 <- ggplot2::ggplot()+
            ggplot2::geom_point(data = af, ggplot2::aes(x = log(forecast), y= log(value))) +
-           ggplot2::geom_line(data = af, ggplot2::aes(x = log(value), y = log(value), linetype = "perfect forecast")) +
+           ggplot2::geom_line(data = df, ggplot2::aes(x = x, y=y, linetype = "perfect forecast")) +
            ggplot2::geom_point(size=3)+
            ggplot2::ggtitle("Prediction-Realization Diagram") +
            ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
-           ggplot2::guides(linetype = ggplot2::guide_legend("")) +
-           ggplot2::geom_line(data = df, ggplot2::aes(x = x, y=y))
+           ggplot2::guides(linetype = ggplot2::guide_legend(""))
 
      if(useLogs == TRUE) {
        gp1 <- gp1+ggplot2::scale_x_continuous(trans=scales::log10_trans(),
